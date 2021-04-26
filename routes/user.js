@@ -78,6 +78,16 @@ router.post("/login", (req, res, next) => {
   });
 });
 
+router.get("/getUsers", (req, res) => {
+  User.getAllUsers((cb) => {
+    console.log(cb);
+    if (cb) {
+      res
+        .status(200)
+        .json({ status: true, message: "Users fetch successfully", data: cb });
+    }
+  });
+});
 router.post("/forgot-password", (req, res) => {
   console.log("working");
   const { email } = req.body;

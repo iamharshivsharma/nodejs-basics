@@ -29,7 +29,11 @@ module.exports.registerUser = (req, res) => {
 module.exports.getUserByEmail = async (email, cb) => {
   User.findOne({ email: email }, cb);
 };
-
+module.exports.getAllUsers = (cb) => {
+  User.find().then((data) => {
+    cb(data);
+  });
+};
 module.exports.verifyPassword = (old_password, givenPassword, callback) => {
   if (old_password == givenPassword) {
     callback(null, true);
