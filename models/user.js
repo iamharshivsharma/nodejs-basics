@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 const sgMail = require("@sendgrid/mail");
 const config = require("../config/credential");
+const bcrypt = require("bcryptjs");
+
 sgMail.setApiKey(config.sendGridApiKey);
 const msg = {
   to: "", // Change to your recipient
   from: "harshivindiit@yopmail.com", // Change to your verified sender
   subject: "Reset Password",
   text: "Please use below link to reset the password",
-  html: `<h2>Please click on the below link to reset the password</h2>
-  <a href='localhost:8888/user/reset-password?email={email}&token={token}'> </a>
-  `,
+  html:
+    `<h2>Please click on the below link to reset the password</h2>` +
+    "<a href='localhost:8888/users/reset-password?email={email}&token={token}'>Click here </a>",
 };
 const UserSchema = mongoose.Schema({
   firstname: { type: String },
@@ -34,12 +36,18 @@ module.exports.getAllUsers = (cb) => {
     cb(data);
   });
 };
-module.exports.verifyPassword = (old_password, givenPassword, callback) => {
-  if (old_password == givenPassword) {
-    callback(null, true);
-  } else {
-    callback(null, false);
-  }
+module.exports.verifyPassword = (givenPassword, hash, callback) => {
+  bcrypt.compare(givenPassword, hash, (err, isMatch) => {
+    console.log(givenPassword, hash);
+    console.log(isMatch, "ismatch");
+    if (err) throw err;
+    callback(null, isMatch);
+  });
+  // if (old_password == givenPassword) {
+  //   callback(null, true);
+  // } else {
+  //   callback(null, false);
+  // }
 };
 module.exports.sendEmail = async (email, cb) => {
   let user = await User.findOne({ email: email });

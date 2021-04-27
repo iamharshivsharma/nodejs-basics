@@ -1,6 +1,7 @@
 const express = require("express");
 const config = require("./config/database");
 const bodyParser = require("body-parser");
+const passport = require("passport");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./routes/user");
@@ -30,7 +31,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/uploads", express.static("uploads"));
 app.use("/users", User);
-app.use("/recipe", Recipes);
+passport.authenticate("jwt", { session: false }), app.use("/recipe", Recipes);
 
 app.listen(port, () => {
   console.log("server started on " + port);

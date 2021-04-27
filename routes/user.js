@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
 const multer = require("multer");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const config = require("../config/database");
+const bcrypt = require("bcryptjs");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -36,16 +40,24 @@ router.post("/register", upload.single("image"), (req, res) => {
         password: req.body.password,
         image: file.filename,
       });
-      try {
-        newUser.save();
-        res
-          .status(200)
-          .json({ status: true, message: "Register Successfully" });
-      } catch (e) {
-        res
-          .status(500)
-          .json({ status: false, message: "Something went wrong" });
-      }
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then((resp) => {
+              res
+                .status(200)
+                .json({ status: true, message: "Register Successfully" });
+            })
+            .catch((err) => {
+              res
+                .status(500)
+                .json({ status: false, message: "Something went wrong" });
+            });
+        });
+      });
     }
   });
 });
@@ -63,16 +75,22 @@ router.post("/login", (req, res, next) => {
     }
     User.verifyPassword(password, user.password, (err, isVerified) => {
       if (err) throw err;
-
       if (isVerified) {
+        const token = jwt.sign(user.toJSON(), config.secret, {
+          expiresIn: 604800,
+        }); // expires in 1 week
         res.json({
           success: true,
-          data: user,
+          token: "JWT " + token,
+          user: {
+            id: user._id,
+            name: user.firstname,
+
+            email: user.email,
+          },
         });
       } else {
-        return res
-          .status(400)
-          .json({ success: false, message: "Wrong password" });
+        return res.status(400).json({ success: false, msg: "Wrong Password" });
       }
     });
   });
@@ -132,28 +150,39 @@ router.post("/reset-password", (req, res) => {
     }
   });
 });
-
-router.post("/update-profile", upload.single("image"), (req, res, next) => {
-  const email = req.body.email;
-  console.log(req.body, req.file);
-  var file = req.file;
-  if (file) {
-    req.body.image = req.file.filename;
+router.get(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  (req, res, next) => {
+    res.json({ user: req.user });
   }
-  let newValues = req.body;
-  User.updateProfile(email, newValues, (err, user) => {
-    if (err) throw err;
-    if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User not found" });
-    } else {
-      if (user) {
-        return res
-          .status(200)
-          .json({ success: true, message: "Profile updated successfully." });
-      }
+);
+router.post(
+  "/update-profile",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  (req, res, next) => {
+    const email = req.body.email;
+    console.log(req.body, req.file);
+    var file = req.file;
+    if (file) {
+      req.body.image = req.file.filename;
     }
-  });
-});
+    let newValues = req.body;
+    User.updateProfile(email, newValues, (err, user) => {
+      if (err) throw err;
+      if (!user) {
+        return res
+          .status(400)
+          .json({ success: false, message: "User not found" });
+      } else {
+        if (user) {
+          return res
+            .status(200)
+            .json({ success: true, message: "Profile updated successfully." });
+        }
+      }
+    });
+  }
+);
 module.exports = router;
