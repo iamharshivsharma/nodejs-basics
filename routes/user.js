@@ -37,6 +37,12 @@ router.post("/register", upload.single("image"), (req, res) => {
         lastname: req.body.lastname,
         contact: req.body.contact,
         email: req.body.email,
+        gender: req.body.gender,
+        city: req.body.city,
+        address: req.body.address,
+        country: req.body.country,
+        zipCode: req.body.zipCode,
+        nationality: req.body.nationality,
         password: req.body.password,
         image: file.filename,
       });
@@ -80,17 +86,14 @@ router.post("/login", (req, res, next) => {
           expiresIn: 604800,
         }); // expires in 1 week
         res.json({
-          success: true,
+          status: true,
           token: "JWT " + token,
-          user: {
-            id: user._id,
-            name: user.firstname,
-
-            email: user.email,
-          },
+          data: user,
         });
       } else {
-        return res.status(400).json({ success: false, msg: "Wrong Password" });
+        return res
+          .status(400)
+          .json({ success: false, message: "Wrong Password" });
       }
     });
   });
