@@ -26,11 +26,15 @@ const UserSchema = mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   image: { type: String },
+  language: { type: Object },
   token: { type: String },
   tokenExpiration: { type: Date },
 });
 
 const User = (module.exports = mongoose.model("User", UserSchema));
+module.exports.getUserById = (id, callback) => {
+  User.findById(id, callback);
+};
 module.exports.registerUser = (req, res) => {
   console.log(res);
 };

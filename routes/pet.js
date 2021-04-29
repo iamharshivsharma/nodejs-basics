@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Recipe = require("../models/recipe");
 const multer = require("multer");
+const Pet = require("../models/pet");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads");
@@ -13,19 +13,19 @@ var storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-router.post("/add", upload.single("recipeImage"), (req, res) => {
-  Recipe.addData(req, res);
+router.post("/add", upload.single("image"), (req, res) => {
+  Pet.addData(req, res);
 });
 router.get("/get", (req, res) => {
-  Recipe.getAllData(req, res);
+  Pet.getAllData(req, res);
 });
-router.get("/get/:recipeId", (req, res) => {
-  Recipe.getSingleData(req, res);
+router.get("/get/:petId", upload.single("image"), (req, res) => {
+  Pet.getSingleData(req, res);
 });
-router.put("/update/:recipeId", (req, res) => {
-  Recipe.updateData(req, res);
+router.put("/update/:petId", (req, res) => {
+  Pet.updateData(req, res);
 });
-router.delete("/delete/:recipeId", (req, res) => {
-  Recipe.deleteData(req, res);
+router.delete("/delete/:petId", (req, res) => {
+  Pet.deleteData(req, res);
 });
 module.exports = router;

@@ -45,6 +45,7 @@ router.post("/register", upload.single("image"), (req, res) => {
         nationality: req.body.nationality,
         password: req.body.password,
         image: file.filename,
+        language: req.body.language,
       });
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {

@@ -6,6 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const User = require("./routes/user");
 const Recipes = require("./routes/recipe");
+const Pet = require("./routes/pet");
 
 const app = express();
 const path = require("path");
@@ -28,10 +29,14 @@ app.get("/", (req, res) => {
 });
 // Set Static Folder
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(passport.initialize());
+app.use(passport.session());
+require("./config/passport")(passport);
 app.use("/uploads", express.static("uploads"));
 app.use("/users", User);
-passport.authenticate("jwt", { session: false }), app.use("/recipe", Recipes);
+passport.authenticate("jwt", { session: false });
+app.use("/recipe", Recipes);
+app.use("/pet", passport.authenticate("jwt", { session: false }), Pet);
 
 app.listen(port, () => {
   console.log("server started on " + port);
