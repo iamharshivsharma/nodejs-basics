@@ -16,7 +16,8 @@ const msg = {
 const UserSchema = mongoose.Schema({
   firstname: { type: String },
   lastname: { type: String },
-  contact: { type: String, required: true },
+  contact: { type: String },
+  fiscalNumber: { type: String, required: true },
   gender: { type: String },
   nationality: { type: String },
   address: { type: String },

@@ -35,7 +35,7 @@ router.post("/register", upload.single("image"), (req, res) => {
       let newUser = new User({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
-        contact: req.body.contact,
+        fiscalNumber: req.body.fiscalNumber,
         email: req.body.email,
         gender: req.body.gender,
         city: req.body.city,
@@ -158,7 +158,11 @@ router.get(
   "/profile",
   passport.authenticate("jwt", { session: false }),
   (req, res, next) => {
-    res.json({ user: req.user });
+    return res.status(200).json({
+      success: true,
+      message: "Profile fetched successfully.",
+      data: req.user,
+    });
   }
 );
 router.post(

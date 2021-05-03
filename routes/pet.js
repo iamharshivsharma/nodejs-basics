@@ -22,7 +22,8 @@ router.get("/get", (req, res) => {
 router.get("/get/:petId", upload.single("image"), (req, res) => {
   Pet.getSingleData(req, res);
 });
-router.put("/update/:petId", (req, res) => {
+router.put("/update/:petId", upload.single("image"), (req, res) => {
+  console.log(req.body, "update");
   Pet.updateData(req, res);
 });
 router.delete("/delete/:petId", (req, res) => {

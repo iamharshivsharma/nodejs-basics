@@ -10,7 +10,7 @@ const PetSchema = mongoose.Schema({
   color: { type: String },
   type: { type: String },
   vaccine: { type: String },
-  treatement: { type: String },
+  treatment: { type: String },
   food: { type: String },
 
   image: { type: String },
@@ -62,24 +62,24 @@ module.exports.getSingleData = (req, res) => {
 module.exports.addData = async (req, res) => {
   console.log(req.body);
   var user = getUser(req);
-  let file;
-  if (req?.file) {
-    file = req.filename;
-  } else {
-    file = { filename: "" };
+  console.log(user);
+  console.log(req.file);
+  var file = req.file;
+  if (!file) {
+    var file = { filename: "" };
   }
-  const { name, age, color, type, vaccine, treatement, food } = req.body;
-  genetrateQrCode((cb) => {
+  const { name, age, color, type, vaccine, treatment, food } = req.body;
+  genetrateQrCode(req.body, (cb) => {
     let pet = new Pet({
       name: name,
       age: age,
       color: color,
       type: type,
       vaccine: vaccine,
-      treatement: treatement,
+      treatment: treatment,
       food: food,
-      image: file,
-      userId: user.id,
+      image: file.filename,
+      userId: user._id,
       qrCode: cb,
     });
     pet
@@ -98,14 +98,12 @@ module.exports.addData = async (req, res) => {
 };
 
 module.exports.updateData = async (req, res) => {
-  const { name } = req.body;
+  let pet = req.body;
 
-  let pet = {
-    name: name,
-  };
   if (req?.file) {
     pet.image = req.file.filename;
   }
+  console.log(pet, req.body, "pet info");
   Pet.findByIdAndUpdate(req.params.petId, pet, { new: true })
     .then((data) => {
       if (!data) {
@@ -129,7 +127,7 @@ module.exports.updateData = async (req, res) => {
 };
 
 module.exports.deleteData = async (req, res) => {
-  Recipe.findByIdAndRemove(req.params.petId)
+  Pet.findByIdAndRemove(req.params.petId)
     .then((data) => {
       if (!data) {
         res.status(404).json({
@@ -151,12 +149,11 @@ module.exports.deleteData = async (req, res) => {
     });
 };
 
-function genetrateQrCode(callback) {
+function genetrateQrCode(json, callback) {
   let data = {
-    name: "Employee Name",
-    age: 27,
-    department: "Police",
-    id: "aisuoiqu3234738jdhf100223",
+    name: json.name,
+    age: json.age,
+    type: json.type,
   };
   let stringdata = JSON.stringify(data);
   // Print the QR code to terminal
