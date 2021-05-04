@@ -12,7 +12,6 @@ const PetSchema = mongoose.Schema({
   vaccine: { type: String },
   treatment: { type: String },
   food: { type: String },
-
   image: { type: String },
   qrCode: { type: String },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
@@ -20,7 +19,10 @@ const PetSchema = mongoose.Schema({
 const Pet = (module.exports = mongoose.model("Pet", PetSchema));
 
 module.exports.getAllData = (req, res) => {
-  Pet.find()
+  let user = getUser(req);
+  console.log(user._id, "user");
+
+  Pet.find({ userId: user._id })
     .then((data) => {
       res.status(200).json({
         status: true,
