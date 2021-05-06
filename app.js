@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const User = require("./routes/user");
 const Recipes = require("./routes/recipe");
 const Pet = require("./routes/pet");
+const Product = require("./routes/product");
+const Category = require("./routes/category");
 
 const app = express();
 const path = require("path");
@@ -37,6 +39,12 @@ app.use("/users", User);
 passport.authenticate("jwt", { session: false });
 app.use("/recipe", Recipes);
 app.use("/pet", passport.authenticate("jwt", { session: false }), Pet);
+app.use("/product", passport.authenticate("jwt", { session: false }), Product);
+app.use(
+  "/category",
+  passport.authenticate("jwt", { session: false }),
+  Category
+);
 
 app.listen(port, () => {
   console.log("server started on " + port);

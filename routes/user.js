@@ -46,6 +46,12 @@ router.post("/register", upload.single("image"), (req, res) => {
         password: req.body.password,
         image: file.filename,
         language: req.body.language,
+        role: req.body.role,
+        numberOfPet: req.body.numberOfPet,
+        petType: req.body.petType,
+        vaccine: req.body.vaccine,
+        treatment: req.body.treatment,
+        food: req.body.food,
       });
       bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(newUser.password, salt, (err, hash) => {
