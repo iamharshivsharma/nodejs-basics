@@ -37,8 +37,9 @@ module.exports.getUserAllData = (req, res) => {
   let user = getUser(req);
   console.log(user._id, "user");
 
-  Product.find({ id: user._id })
+  Product.find({ userId: user._id })
     .then((data) => {
+      console.log(data, "data");
       res.status(200).json({
         status: true,
         message: "User product fetch successfully",
