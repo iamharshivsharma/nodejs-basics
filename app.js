@@ -21,7 +21,7 @@ mongoose.connection.on("error", (err) => {
   console.log("Error connecting to database " + err);
 });
 
-const port = 8888;
+const port = 3000;
 
 app.use(cors("*"));
 app.use(bodyParser.json());
