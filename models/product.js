@@ -102,11 +102,11 @@ module.exports.addData = async (req, res) => {
 
 module.exports.updateData = async (req, res) => {
   let product = req.body;
-
-  if (req?.file) {
+  console.log(req.file);
+  if (req?.file != undefined) {
     product.image = req.file.filename;
   }
-  console.log(req.body, "product info");
+  // console.log(req.body, "product info");
   Product.findByIdAndUpdate(req.params.id, product, { new: true })
     .then((data) => {
       if (!data) {
