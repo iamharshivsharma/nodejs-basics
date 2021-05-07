@@ -37,7 +37,7 @@ module.exports.getUserAllData = (req, res) => {
   let user = getUser(req);
   console.log(user._id, "user");
 
-  Product.find({ id: user_id })
+  Product.find({ id: user._id })
     .then((data) => {
       res.status(200).json({
         status: true,
