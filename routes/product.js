@@ -19,6 +19,9 @@ router.post("/add", upload.single("image"), (req, res) => {
 router.get("/get", (req, res) => {
   Product.getAllData(req, res);
 });
+router.get("/getUserProducts", (req, res) => {
+  Product.getUserAllData(req, res);
+});
 router.get("/get/:id", upload.single("image"), (req, res) => {
   Product.getSingleData(req, res);
 });

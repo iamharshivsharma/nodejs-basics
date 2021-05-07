@@ -33,7 +33,24 @@ module.exports.getAllData = (req, res) => {
         .json({ status: false, message: "Something went wrong", data: [] });
     });
 };
+module.exports.getUserAllData = (req, res) => {
+  let user = getUser(req);
+  console.log(user._id, "user");
 
+  Product.find({ id: user_id })
+    .then((data) => {
+      res.status(200).json({
+        status: true,
+        message: "User product fetch successfully",
+        data: data,
+      });
+    })
+    .catch((err) => {
+      res
+        .status(500)
+        .json({ status: false, message: "Something went wrong", data: [] });
+    });
+};
 module.exports.getSingleData = (req, res) => {
   Product.findById(req.params.id)
     .then((data) => {
