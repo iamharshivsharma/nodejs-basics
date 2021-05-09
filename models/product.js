@@ -9,6 +9,8 @@ const ProductSchema = mongoose.Schema({
   price: { type: String },
   description: { type: String },
   productType: { type: String },
+  quantity: { type: String },
+
   petTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "PetType" },
   images: { type: String },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -22,6 +24,7 @@ module.exports.getAllData = (req, res) => {
 
   Product.find()
     .populate("userId")
+    .populate("petTypeId")
     .exec()
     .then((data) => {
       res.status(200).json({
@@ -60,6 +63,9 @@ module.exports.getUserAllData = (req, res) => {
 };
 module.exports.getSingleData = (req, res) => {
   Product.findById(req.params.id)
+    .populate("userId")
+    .populate("petTypeId")
+    .exec()
     .then((data) => {
       if (!data) {
         res.status(404).json({
@@ -99,6 +105,7 @@ module.exports.addData = async (req, res) => {
     petTypeId,
     productType,
     sellerInfo,
+    quantity,
   } = req.body;
 
   let product = new Product({
@@ -109,6 +116,7 @@ module.exports.addData = async (req, res) => {
     petTypeId: petTypeId,
     productType: productType,
     sellerInfo: sellerInfo,
+    quantity: quantity,
     images: JSON.stringify(files),
     userId: user._id,
   });
