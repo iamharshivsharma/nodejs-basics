@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const Product = require("../models/product");
+const PetType = require("../models/pet-type");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads");
@@ -13,23 +13,20 @@ var storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-router.post("/add", upload.array("images", 4), (req, res) => {
-  Product.addData(req, res);
+router.post("/add", upload.single("image"), (req, res) => {
+  PetType.addData(req, res);
 });
 router.get("/get", (req, res) => {
-  Product.getAllData(req, res);
-});
-router.get("/getUserProducts", (req, res) => {
-  Product.getUserAllData(req, res);
+  PetType.getAllData(req, res);
 });
 router.get("/get/:id", upload.single("image"), (req, res) => {
-  Product.getSingleData(req, res);
+  PetType.getSingleData(req, res);
 });
-router.put("/update/:id", upload.array("images", 4), (req, res) => {
+router.put("/update/:id", upload.single("image"), (req, res) => {
   console.log(req.body, "update");
-  Product.updateData(req, res);
+  PetType.updateData(req, res);
 });
 router.delete("/delete/:id", (req, res) => {
-  Product.deleteData(req, res);
+  PetType.deleteData(req, res);
 });
 module.exports = router;

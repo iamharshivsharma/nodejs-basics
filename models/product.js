@@ -5,13 +5,14 @@ const config = require("../config/database");
 
 const ProductSchema = mongoose.Schema({
   name: { type: String },
-  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "category" },
+  categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   price: { type: String },
   description: { type: String },
   productType: { type: String },
-  petType: { type: String },
-  image: { type: String },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+  petTypeId: { type: mongoose.Schema.Types.ObjectId, ref: "PetType" },
+  images: { type: String },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  sellerInfo: { type: String },
 });
 const Product = (module.exports = mongoose.model("Product", ProductSchema));
 
@@ -20,6 +21,8 @@ module.exports.getAllData = (req, res) => {
   console.log(user._id, "user");
 
   Product.find()
+    .populate("userId")
+    .exec()
     .then((data) => {
       res.status(200).json({
         status: true,
@@ -28,9 +31,12 @@ module.exports.getAllData = (req, res) => {
       });
     })
     .catch((err) => {
-      res
-        .status(500)
-        .json({ status: false, message: "Something went wrong", data: [] });
+      res.status(500).json({
+        status: false,
+        message: "Something went wrong",
+        data: [],
+        err: err,
+      });
     });
 };
 module.exports.getUserAllData = (req, res) => {
@@ -77,21 +83,22 @@ module.exports.getSingleData = (req, res) => {
     });
 };
 module.exports.addData = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
+  // res.send(req.files);
+
+  let files = req.files.map((v) => {
+    return v.filename;
+  });
   var user = getUser(req);
-  console.log(user);
-  console.log(req.file);
-  var file = req.file;
-  if (!file) {
-    var file = { filename: "" };
-  }
+
   const {
     name,
     price,
     description,
     categoryId,
-    petType,
+    petTypeId,
     productType,
+    sellerInfo,
   } = req.body;
 
   let product = new Product({
@@ -99,9 +106,10 @@ module.exports.addData = async (req, res) => {
     price: price,
     description: description,
     categoryId: categoryId,
-    petType: petType,
+    petTypeId: petTypeId,
     productType: productType,
-    image: file.filename,
+    sellerInfo: sellerInfo,
+    images: JSON.stringify(files),
     userId: user._id,
   });
   product
@@ -120,11 +128,16 @@ module.exports.addData = async (req, res) => {
 
 module.exports.updateData = async (req, res) => {
   let product = req.body;
-  console.log(req.file);
-  if (req?.file != undefined) {
-    product.image = req.file.filename;
+  console.log(req.files, "files");
+
+  if (req.files.length) {
+    let files = req.files.map((v) => {
+      return v.filename;
+    });
+    product.images = JSON.stringify([...JSON.parse(product.images), ...files]);
   }
-  // console.log(req.body, "product info");
+
+  console.log(product, "product info");
   Product.findByIdAndUpdate(req.params.id, product, { new: true })
     .then((data) => {
       if (!data) {

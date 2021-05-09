@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const User = require("./routes/user");
 const Recipes = require("./routes/recipe");
 const Pet = require("./routes/pet");
+const PetType = require("./routes/pet-type");
 const Product = require("./routes/product");
 const Category = require("./routes/category");
 
@@ -39,6 +40,8 @@ app.use("/users", User);
 passport.authenticate("jwt", { session: false });
 app.use("/recipe", Recipes);
 app.use("/pet", passport.authenticate("jwt", { session: false }), Pet);
+app.use("/pet-type", PetType);
+
 app.use("/product", passport.authenticate("jwt", { session: false }), Product);
 app.use(
   "/category",

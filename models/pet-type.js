@@ -3,19 +3,17 @@ const User = require("./user");
 const jwt = require("jsonwebtoken");
 const config = require("../config/database");
 
-const CategorySchema = mongoose.Schema({
+const PetTypeSchema = mongoose.Schema({
   name: { type: String },
-  image: { type: String },
   status: { type: String },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 });
-const Category = (module.exports = mongoose.model("Category", CategorySchema));
+const PetType = (module.exports = mongoose.model("PetType", PetTypeSchema));
 
 module.exports.getAllData = (req, res) => {
-  let user = getUser(req);
-  console.log(user._id, "user");
+  //   let user = getUser(req);
+  //   console.log(user._id, "user");
 
-  Category.find()
+  PetType.find()
     .then((data) => {
       res.status(200).json({
         status: true,
@@ -31,12 +29,13 @@ module.exports.getAllData = (req, res) => {
 };
 
 module.exports.getSingleData = (req, res) => {
-  Catogory.findById(req.params.id)
+  petType
+    .findById(req.params.id)
     .then((data) => {
       if (!data) {
         res.status(404).json({
           status: false,
-          message: "Category not found with this id",
+          message: "pet type not found with this id",
           data: data,
         });
 
@@ -56,15 +55,15 @@ module.exports.getSingleData = (req, res) => {
 };
 module.exports.addData = async (req, res) => {
   console.log(req.body);
-  var user = getUser(req);
-  console.log(user);
-  const { name } = req.body;
+  //   var user = getUser(req);
+  //   console.log(user);
+  const { name, status } = req.body;
 
-  let category = new Category({
+  let petType = new PetType({
     name: name,
-    userId: user._id,
+    status: status,
   });
-  category
+  petType
     .save()
     .then((resp) => {
       res.status(200).json({
@@ -79,18 +78,18 @@ module.exports.addData = async (req, res) => {
 };
 
 module.exports.updateData = async (req, res) => {
-  let category = req.body;
+  let pet = req.body;
 
   //   if (req?.file) {
   //     category.image = req.file.filename;
   //   }
-  console.log(req.body, "category info");
-  Category.findByIdAndUpdate(req.params.id, category, { new: true })
+  console.log(req.body, "Pet type info");
+  PetType.findByIdAndUpdate(req.params.id, pet, { new: true })
     .then((data) => {
       if (!data) {
         res.status(404).json({
           status: false,
-          message: "Category not found with this id",
+          message: "Pet type not found with this id",
           data: data,
         });
 
@@ -98,7 +97,7 @@ module.exports.updateData = async (req, res) => {
       }
       res.status(200).json({
         status: true,
-        message: "Category updated successfully",
+        message: "Pet type updated successfully",
         data: data,
       });
     })
@@ -108,12 +107,12 @@ module.exports.updateData = async (req, res) => {
 };
 
 module.exports.deleteData = async (req, res) => {
-  Category.findByIdAndRemove(req.params.id)
+  PetType.findByIdAndRemove(req.params.id)
     .then((data) => {
       if (!data) {
         res.status(404).json({
           status: false,
-          message: "Category not found with this id",
+          message: "Pet type not found with this id",
           data: data,
         });
 
@@ -121,7 +120,7 @@ module.exports.deleteData = async (req, res) => {
       }
       res.status(200).json({
         status: true,
-        message: "Category deleted successfully",
+        message: "pet type deleted successfully",
         data: data,
       });
     })
