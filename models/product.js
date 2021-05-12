@@ -19,18 +19,22 @@ const ProductSchema = mongoose.Schema({
 const Product = (module.exports = mongoose.model("Product", ProductSchema));
 
 module.exports.getAllData = (req, res) => {
+  const { page = 1, limit = 1 } = req.query;
   let user = getUser(req);
   console.log(user._id, "user");
 
   Product.find()
+    .limit(limit * 1)
+    .skip((page - 1) * limit)
     .populate("userId")
     .populate("petTypeId")
     .exec()
-    .then((data) => {
+    .then(async (data) => {
       res.status(200).json({
         status: true,
         message: "All data fetch successfully",
         data: data,
+        total: await Product.find().count(),
       });
     })
     .catch((err) => {
@@ -53,6 +57,7 @@ module.exports.getUserAllData = (req, res) => {
         status: true,
         message: "User product fetch successfully",
         data: data,
+        total: data.length,
       });
     })
     .catch((err) => {
