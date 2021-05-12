@@ -10,6 +10,7 @@ const Pet = require("./routes/pet");
 const PetType = require("./routes/pet-type");
 const Product = require("./routes/product");
 const Category = require("./routes/category");
+const Cart = require("./routes/Cart");
 
 const app = express();
 const path = require("path");
@@ -43,6 +44,8 @@ app.use("/pet", passport.authenticate("jwt", { session: false }), Pet);
 app.use("/pet-type", PetType);
 
 app.use("/product", passport.authenticate("jwt", { session: false }), Product);
+app.use("/cart", passport.authenticate("jwt", { session: false }), Cart);
+
 app.use(
   "/category",
   passport.authenticate("jwt", { session: false }),
